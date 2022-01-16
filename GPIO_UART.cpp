@@ -51,7 +51,7 @@ void GPIO_UART::readBit() {
     }
    
 
-    rxClock.attach_us(callback(this, &GPIO_UART::readBit),(floor(1000000/boudRate) - 23));    
+    rxClock.attach_us(callback(this, &GPIO_UART::readBit),boudRateUs);    
     
     return;
 
@@ -118,7 +118,7 @@ void GPIO_UART::initUart(){
         rxFrame.state.parityLen = uartSettings.parityLen;
         rxFrame.state.stopLen   = uartSettings.stopLen;
 
-        rxClock.attach_us(callback(this,&GPIO_UART::readBit),(floor(1000000/boudRate) - 23));
+        rxClock.attach_us(callback(this,&GPIO_UART::readBit),boudRateUs);
     }
 
 };
@@ -176,7 +176,7 @@ void GPIO_UART::sendBit() {
    
 
     
-    txClock.attach_us(callback(this,&GPIO_UART::sendBit),(floor(1000000/boudRate) - 23));
+    txClock.attach_us(callback(this,&GPIO_UART::sendBit),boudRateUs);
     
    
 };
@@ -223,7 +223,7 @@ GPIO_UART::GPIO_UART(PinName rxPin, PinName txPin): rxInterrupt(rxPin),tx(txPin)
 
 void GPIO_UART::run(int boudRate){
 
-    boudRate = boudRate;
+    boudRateUs = floor(1000000/boudRate) - 21;
    
 };
 

@@ -41,7 +41,7 @@ class GPIO_UART {
 
     public:
        
-        unsigned int boudRate = 9600; 
+        unsigned int boudRateUs = 86; 
 
         Timeout rxClock;
         Timeout txClock;
