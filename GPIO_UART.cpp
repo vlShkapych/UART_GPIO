@@ -1,5 +1,7 @@
 
 #include "GPIO_UART.h"
+#include <cmath>
+#include <cstdio>
 
 void GPIO_UART::readBit() {
     
@@ -49,7 +51,7 @@ void GPIO_UART::readBit() {
     }
    
 
-    rxClock.attach_us(callback(this, &GPIO_UART::readBit),82);    
+    rxClock.attach_us(callback(this, &GPIO_UART::readBit),(floor(1000000/boudRate) - 23));    
     
     return;
 
@@ -116,17 +118,23 @@ void GPIO_UART::initUart(){
         rxFrame.state.parityLen = uartSettings.parityLen;
         rxFrame.state.stopLen   = uartSettings.stopLen;
 
-        rxClock.attach_us(callback(this,&GPIO_UART::readBit),110);
+        rxClock.attach_us(callback(this,&GPIO_UART::readBit),(floor(1000000/boudRate) - 23));
     }
 
 };
 
 void GPIO_UART::sendBit() {
 
+
+   
+
+
     int dataBit;
 
-
     if (txFrame.state.dataLen) {
+
+
+
         txFrame.state.dataLen--;
         dataBit = txFrame.dataByte & 0x01;
         txFrame.dataByte >>= 1;
@@ -149,6 +157,7 @@ void GPIO_UART::sendBit() {
 
         if (txFrame.rPointer == txFrame.wPointer) {
             txFrame.state.isBusy = 0;
+
             return;
         }
 
@@ -166,7 +175,10 @@ void GPIO_UART::sendBit() {
     tx.write(dataBit);
    
 
-    txClock.attach_us(callback(this,&GPIO_UART::sendBit),86);
+    
+    txClock.attach_us(callback(this,&GPIO_UART::sendBit),(floor(1000000/boudRate) - 23));
+    
+   
 };
 
 int GPIO_UART::write(uint8_t c) {
@@ -187,7 +199,12 @@ int GPIO_UART::write(uint8_t c) {
 
     if (txFrame.state.isBusy == 0) {
         txFrame.state.isBusy = 1;
-        txClock.attach_us(callback(this,&GPIO_UART::sendBit),10);
+        
+
+       
+        sendBit();
+
+        
     }
    
     return c;
@@ -202,6 +219,12 @@ GPIO_UART::GPIO_UART(PinName rxPin, PinName txPin): rxInterrupt(rxPin),tx(txPin)
     txFrame.state.isBusy = 0;  
     rxInterrupt.fall(callback(this,&GPIO_UART::initUart));
 
+};
+
+void GPIO_UART::run(int boudRate){
+
+    boudRate = boudRate;
+   
 };
 
 

@@ -5,6 +5,7 @@
 #include "mbed.h"
 #include <queue>
 #include "DigitalIn.h"
+#include "HighResClock.h"
 #include "PinNames.h"
 #include "Timeout.h"
 #include "mbed.h"
@@ -40,7 +41,7 @@ class GPIO_UART {
 
     public:
        
-        unsigned int boudRateUs; 
+        unsigned int boudRate = 9600; 
 
         Timeout rxClock;
         Timeout txClock;
@@ -49,13 +50,18 @@ class GPIO_UART {
         DigitalIn rx;
         InterruptIn rxInterrupt;
 
+        Timer t;
+        int time;
+        
+       
+
         struct DataFrame rxFrame;
         struct DataFrame txFrame;
 
         struct {
-            unsigned int dataLen=8;
-            unsigned int stopLen = 1;
-            unsigned int parityLen=1;
+            unsigned int dataLen = 0;
+            unsigned int stopLen = 0;
+            unsigned int parityLen;
             bool parity_even;
         } uartSettings;
 
